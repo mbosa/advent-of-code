@@ -4,3 +4,5 @@ members = ["day*"]
 resolver = "2"
 
 [workspace.dependencies]
+lazy_static = "1.4.0"
+regex = "1.10.2"
