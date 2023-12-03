@@ -2,14 +2,14 @@ use std::cmp;
 
 use crate::utils::contains_special_char;
 
-pub fn part1(input: &Vec<Vec<char>>) -> i32 {
+pub fn part1(input: &Vec<Vec<char>>) -> u32 {
     let rows = input.len() as i32;
     let cols = input[0].len() as i32;
 
-    let mut res: i32 = 0;
+    let mut res: u32 = 0;
 
     for (i, row) in input.iter().enumerate() {
-        let mut j = 0;
+        let mut j = 0i32;
 
         while j < cols {
             let el = row[j as usize];
@@ -18,11 +18,11 @@ pub fn part1(input: &Vec<Vec<char>>) -> i32 {
                 continue;
             }
 
-            let mut num = 0;
+            let mut num = 0u32;
             let start = j;
 
             while j < cols && row[j as usize].is_ascii_digit() {
-                let digit = row[j as usize].to_digit(10).unwrap() as i32;
+                let digit = row[j as usize].to_digit(10).unwrap();
 
                 num = num * 10 + digit;
 

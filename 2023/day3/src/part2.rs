@@ -1,258 +1,56 @@
-use crate::utils::{calc_num_left, calc_num_right, Pos};
+use crate::utils::slice_char_to_u32;
 
-pub fn part2(input: &Vec<Vec<char>>) -> i32 {
+pub fn part2(input: &Vec<Vec<char>>) -> u32 {
     let rows = input.len() as i32;
     let cols = input[0].len() as i32;
 
-    let mut res: i32 = 0;
+    let mut res = 0u32;
 
     for (i, row) in input.iter().enumerate() {
-        let mut j = cols - 1;
+        let i = i as i32;
+        let mut j = 0i32;
 
-        while j >= 0 {
+        while j < cols {
             let el = row[j as usize];
             if el != '*' {
-                j -= 1;
+                j += 1;
                 continue;
             }
 
-            // el is a gear
+            let mut nums_around = Vec::<u32>::new();
 
-            let mut nums_around = Vec::<i32>::new();
+            let mut segments: [&[char]; 3] = [&[], &[], &[]];
 
-            // find num on the left
-            if let Some(num) = calc_num_left(
-                input,
-                Pos {
-                    row: i as i32,
-                    col: j - 1,
-                },
-            ) {
-                nums_around.push(num);
-            }
-
-            // find num on the right
-            if let Some(num) = calc_num_right(
-                input,
-                Pos {
-                    row: i as i32,
-                    col: j + 1,
-                },
-            ) {
-                nums_around.push(num);
-            }
-
-            // up
-            if i > 0 {
-                let row_up = &input[i - 1];
-                let left = 0.max(j - 1) as usize;
-                let right = (j + 2).min(cols) as usize;
-                let segment_up = &input[i - 1][left..right];
-
-                match (
-                    segment_up[0].is_ascii_digit(),
-                    segment_up[1].is_ascii_digit(),
-                    segment_up[2].is_ascii_digit(),
-                ) {
-                    (false, false, false) => {}
-                    (true, false, true) => {
-                        // find num on the left
-                        if let Some(num) = calc_num_left(
-                            input,
-                            Pos {
-                                row: (i - 1) as i32,
-                                col: j - 1,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-
-                        // find num on the right
-                        if let Some(num) = calc_num_right(
-                            input,
-                            Pos {
-                                row: (i - 1) as i32,
-                                col: j + 1,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-                    }
-                    (false, false, true) => {
-                        // find num on the right
-                        if let Some(num) = calc_num_right(
-                            input,
-                            Pos {
-                                row: (i - 1) as i32,
-                                col: j + 1,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-                    }
-                    (false, true, _) => {
-                        // find num on the left
-                        // find num on the right
-                        if let Some(num) = calc_num_right(
-                            input,
-                            Pos {
-                                row: (i - 1) as i32,
-                                col: j,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-                    }
-                    (true, false, false) => {
-                        // find num on the left
-                        if let Some(num) = calc_num_left(
-                            input,
-                            Pos {
-                                row: (i - 1) as i32,
-                                col: j - 1,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-                    }
-                    (_, true, false) => {
-                        // find num on the left
-                        if let Some(num) = calc_num_left(
-                            input,
-                            Pos {
-                                row: (i - 1) as i32,
-                                col: j,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-                    }
-                    (true, true, true) => {
-                        // find leftmost digit
-                        let mut k = j + 1;
-                        while k >= 0 && row_up[k as usize].is_ascii_digit() {
-                            k -= 1;
-                        }
-
-                        // find num on the right
-                        if let Some(num) = calc_num_right(
-                            input,
-                            Pos {
-                                row: (i - 1) as i32,
-                                col: k + 1,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-                    }
+            for (k, row_i) in [i, i - 1, i + 1].into_iter().enumerate() {
+                if row_i < 0 || row_i >= rows {
+                    continue;
                 }
-            }
 
-            // down
-            if i < (rows as usize) - 1 {
-                let row_down = &input[i + 1];
-                let left = 0.max(j - 1) as usize;
-                let right = (j + 2).min(cols) as usize;
-                let segment_down = &row_down[left..right];
+                let row = &input[row_i as usize];
 
-                match (
-                    segment_down[0].is_ascii_digit(),
-                    segment_down[1].is_ascii_digit(),
-                    segment_down[2].is_ascii_digit(),
-                ) {
-                    (false, false, false) => {}
-                    (true, false, true) => {
-                        // find num on the left
-                        if let Some(num) = calc_num_left(
-                            input,
-                            Pos {
-                                row: (i + 1) as i32,
-                                col: j - 1,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-
-                        // find num on the right
-                        if let Some(num) = calc_num_right(
-                            input,
-                            Pos {
-                                row: (i + 1) as i32,
-                                col: j + 1,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-                    }
-                    (false, false, true) => {
-                        // find num on the right
-                        if let Some(num) = calc_num_right(
-                            input,
-                            Pos {
-                                row: (i + 1) as i32,
-                                col: j + 1,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-                    }
-                    (false, true, _) => {
-                        // find num on the left
-                        // find num on the right
-                        if let Some(num) = calc_num_right(
-                            input,
-                            Pos {
-                                row: (i + 1) as i32,
-                                col: j,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-                    }
-                    (true, false, false) => {
-                        // find num on the left
-                        if let Some(num) = calc_num_left(
-                            input,
-                            Pos {
-                                row: (i + 1) as i32,
-                                col: j - 1,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-                    }
-                    (_, true, false) => {
-                        // find num on the left
-                        if let Some(num) = calc_num_left(
-                            input,
-                            Pos {
-                                row: (i + 1) as i32,
-                                col: j,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-                    }
-                    (true, true, true) => {
-                        // find leftmost digit
-                        let mut k = j + 1;
-                        while k >= 0 && row_down[k as usize].is_ascii_digit() {
-                            k -= 1;
-                        }
-
-                        // find num on the right
-                        if let Some(num) = calc_num_right(
-                            input,
-                            Pos {
-                                row: (i + 1) as i32,
-                                col: k + 1,
-                            },
-                        ) {
-                            nums_around.push(num);
-                        }
-                    }
+                // find leftmost digit
+                let mut l = j - 1;
+                while l >= 0 && row[l as usize].is_ascii_digit() {
+                    l -= 1;
                 }
+                l += 1;
+                // find rightmost digit
+                let mut r = j + 1;
+                while r < cols && row[r as usize].is_ascii_digit() {
+                    r += 1;
+                }
+                r -= 1;
+
+                segments[k] = &row[l as usize..=r as usize];
             }
+
+            // extract the numbers from all the segments
+            segments
+                .into_iter()
+                .flat_map(|s| s.split(|&c| !c.is_ascii_digit()))
+                .filter(|c| c.len() > 0)
+                .map(slice_char_to_u32)
+                .for_each(|n| nums_around.push(n));
 
             if nums_around.len() == 2 {
                 let ratio = nums_around[0] * nums_around[1];
@@ -260,7 +58,7 @@ pub fn part2(input: &Vec<Vec<char>>) -> i32 {
                 res += ratio;
             }
 
-            j -= 1;
+            j += 1;
         }
     }
     res
