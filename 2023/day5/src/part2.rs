@@ -1,49 +1,79 @@
-use std::{
-    sync::{Arc, Mutex},
-    thread,
-};
+use std::cmp;
 
-use crate::{data::Input, mapper};
+use crate::data::{Input, MapItem};
 
-pub fn part2(input: &Input) -> u64 {
-    let min: Arc<Mutex<u64>> = Arc::new(Mutex::new(u64::MAX));
+pub fn part2(input: &Input) -> i64 {
+    let mut outcome: Vec<[i64; 2]> = Vec::new();
+    let mut stack = input
+        .seeds
+        .chunks_exact(2)
+        .map(|chunk| [chunk[0], chunk[0] + chunk[1]])
+        .collect::<Vec<_>>();
 
-    thread::scope(|scope| {
-        for chunk in input.seeds.chunks_exact(2) {
-            let from = chunk[0];
-            let to = chunk[0] + chunk[1];
-
-            println!("start chunk {}", from);
-
-            let shared_min = min.clone();
-
-            scope.spawn(move || {
-                println!("spawn thread for chunk {}", from);
-
-                let chunk_min = (from..to)
-                    .map(|seed| {
-                        let soil = mapper(seed, &input.seed_to_soil);
-                        let fertilizer = mapper(soil, &input.soil_to_fertilizer);
-                        let water = mapper(fertilizer, &input.fertilizer_to_water);
-                        let light = mapper(water, &input.water_to_light);
-                        let temperature = mapper(light, &input.light_to_temperature);
-                        let humidity = mapper(temperature, &input.temperature_to_humidity);
-                        let location = mapper(humidity, &input.humidity_to_location);
-                        location
-                    })
-                    .min()
-                    .unwrap();
-
-                let mut guard = shared_min.lock().unwrap();
-
-                *guard = std::cmp::min(*guard, chunk_min);
-                println!("finish chunk {}", from);
-            });
+    for maps in &input.maps {
+        while let Some(range) = stack.pop() {
+            let o = mapper(range, maps, &mut stack);
+            outcome.push(o);
         }
-    });
 
-    let x = *min.lock().unwrap();
-    x
+        stack = outcome.clone();
+        outcome = Vec::new();
+    }
+
+    stack.iter().map(|&[from, _to]| from).min().unwrap()
+}
+
+fn transform_range([from, to]: [i64; 2], delta: i64) -> [i64; 2] {
+    let new_from = from + delta;
+    let new_to = to + delta;
+
+    [new_from, new_to]
+}
+
+fn mapper(range: [i64; 2], map: &Vec<MapItem>, stack: &mut Vec<[i64; 2]>) -> [i64; 2] {
+    for item in map {
+        let delta = item.dst_start - item.src_start;
+        let range_map = [item.src_start, item.src_start + item.range];
+
+        if range[1] <= range_map[0] || range[0] >= range_map[1] {
+            // no intersection
+            continue;
+        }
+
+        if range[0] >= range_map[0] && range[1] <= range_map[1] {
+            // range inside range_map
+            let mapped_range: [i64; 2] = transform_range(range, delta);
+
+            return mapped_range;
+        } else if range_map[0] > range[0] && range_map[1] < range[1] {
+            // range_map inside range
+            let mapped_range = transform_range(range_map, delta);
+            let left_range = [range[0], range_map[0]];
+            let right_range = [range_map[1], range[1]];
+
+            stack.push(left_range);
+            stack.push(right_range);
+
+            return mapped_range;
+        } else {
+            // intersection
+            let from = cmp::max(range[0], range_map[0]);
+            let to = cmp::min(range[1], range_map[1]);
+
+            let mapped_range = transform_range([from, to], delta);
+
+            let remainder_range = if range[0] < range_map[0] {
+                [range[0], range_map[0]]
+            } else {
+                [range_map[1], range[1]]
+            };
+            stack.push(remainder_range);
+
+            return mapped_range;
+        }
+    }
+    // no intersection
+    range
 }
 
 #[cfg(test)]

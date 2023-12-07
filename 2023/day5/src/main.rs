@@ -25,99 +25,26 @@ fn main() {
 
 fn parse_input(input: &str) -> Result<Input> {
     let mut i_iter = input.split("\n\n");
-    let (_, seeds) = i_iter.next().unwrap().split_once(": ").unwrap();
+    let (_, seeds) = i_iter
+        .next()
+        .ok_or(Error::msg("Error parsing seeds"))?
+        .split_once(": ")
+        .ok_or(Error::msg("Error parsing seeds"))?;
     let seeds = seeds
-        .split(" ")
-        .map(|s| s.parse::<u64>().unwrap())
-        .collect::<Vec<u64>>();
+        .split_whitespace()
+        .map(|s| s.parse())
+        .collect::<Result<Vec<i64>, _>>()?;
 
-    let seed_to_soil = i_iter
-        .next()
-        .ok_or(Error::msg("seed-to-soil map missing"))?
-        .lines()
-        .skip(1)
-        .map(|s| s.parse::<MapItem>())
-        .collect::<Result<Vec<MapItem>>>()?;
+    let maps = i_iter
+        .map(|map| {
+            map.lines()
+                .skip(1)
+                .map(|line| line.parse::<MapItem>())
+                .collect::<Result<Vec<_>>>()
+        })
+        .collect::<Result<Vec<_>>>()?;
 
-    let soil_to_fertilizer = i_iter
-        .next()
-        .ok_or(Error::msg("soil_to_fertilizer map missing"))?
-        .lines()
-        .skip(1)
-        .map(|s| s.parse::<MapItem>())
-        .collect::<Result<Vec<MapItem>>>()?;
-
-    let fertilizer_to_water = i_iter
-        .next()
-        .ok_or(Error::msg("fertilizer_to_water map missing"))?
-        .lines()
-        .skip(1)
-        .map(|s| s.parse::<MapItem>())
-        .collect::<Result<Vec<MapItem>>>()?;
-
-    let water_to_light = i_iter
-        .next()
-        .ok_or(Error::msg("water_to_light map missing"))?
-        .lines()
-        .skip(1)
-        .map(|s| s.parse::<MapItem>())
-        .collect::<Result<Vec<MapItem>>>()?;
-
-    let light_to_temperature = i_iter
-        .next()
-        .ok_or(Error::msg("light_to_temperature map missing"))?
-        .lines()
-        .skip(1)
-        .map(|s| s.parse::<MapItem>())
-        .collect::<Result<Vec<MapItem>>>()?;
-
-    let temperature_to_humidity = i_iter
-        .next()
-        .ok_or(Error::msg("temperature_to_humidity map missing"))?
-        .lines()
-        .skip(1)
-        .map(|s| s.parse::<MapItem>())
-        .collect::<Result<Vec<MapItem>>>()?;
-
-    let humidity_to_location = i_iter
-        .next()
-        .ok_or(Error::msg("humidity_to_location map missing"))?
-        .lines()
-        .skip(1)
-        .map(|s| s.parse::<MapItem>())
-        .collect::<Result<Vec<MapItem>>>()?;
-
-    let i = Input {
-        seeds,
-        seed_to_soil,
-        soil_to_fertilizer,
-        fertilizer_to_water,
-        water_to_light,
-        light_to_temperature,
-        temperature_to_humidity,
-        humidity_to_location,
-    };
+    let i = Input { seeds, maps };
 
     Ok(i)
-}
-
-fn mapper(item: u64, map: &Vec<MapItem>) -> u64 {
-    for &MapItem {
-        dst_start,
-        src_start,
-        range,
-    } in map
-    {
-        if item < src_start {
-            continue;
-        }
-
-        if item >= src_start + range {
-            continue;
-        }
-
-        return item - src_start + dst_start;
-    }
-
-    item
 }

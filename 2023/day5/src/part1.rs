@@ -1,21 +1,33 @@
-use crate::{data::Input, mapper};
+use crate::data::{Input, MapItem};
 
-pub fn part1(input: &Input) -> u64 {
+pub fn part1(input: &Input) -> i64 {
     input
         .seeds
         .iter()
-        .map(|&seed| {
-            let soil = mapper(seed, &input.seed_to_soil);
-            let fertilizer = mapper(soil, &input.soil_to_fertilizer);
-            let water = mapper(fertilizer, &input.fertilizer_to_water);
-            let light = mapper(water, &input.water_to_light);
-            let temperature = mapper(light, &input.light_to_temperature);
-            let humidity = mapper(temperature, &input.temperature_to_humidity);
-            let location = mapper(humidity, &input.humidity_to_location);
-            location
-        })
+        .map(|&seed| input.maps.iter().fold(seed, |acc, maps| mapper(acc, maps)))
         .min()
         .unwrap()
+}
+
+fn mapper(item: i64, map: &Vec<MapItem>) -> i64 {
+    for &MapItem {
+        dst_start,
+        src_start,
+        range,
+    } in map
+    {
+        if item < src_start {
+            continue;
+        }
+
+        if item >= src_start + range {
+            continue;
+        }
+
+        return item - src_start + dst_start;
+    }
+
+    item
 }
 
 #[cfg(test)]
