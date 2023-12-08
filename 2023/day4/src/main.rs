@@ -1,4 +1,4 @@
-use std::{collections::HashSet, env, fs};
+use std::collections::HashSet;
 
 mod part1;
 mod part2;
@@ -13,9 +13,7 @@ struct Scratchcard {
 }
 
 fn main() {
-    let input_path = env::current_dir().unwrap().join("inputs/day4.txt");
-
-    let input = fs::read_to_string(input_path).unwrap();
+    let input = include_str!("../../inputs/day4.txt");
 
     let parsed = parse_input(&input);
 

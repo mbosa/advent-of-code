@@ -1,5 +1,4 @@
 use data::{ParseGameError, Rgb};
-use std::{env, fs};
 
 mod data;
 mod part1;
@@ -11,9 +10,7 @@ use part2::part2;
 use data::Game;
 
 fn main() {
-    let input_path = env::current_dir().unwrap().join("inputs/day2.txt");
-
-    let input = fs::read_to_string(input_path).unwrap();
+    let input = include_str!("../../inputs/day2.txt");
 
     let parsed = parse_input(&input).unwrap();
 
