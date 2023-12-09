@@ -1,20 +1,16 @@
-pub fn part2(input: &Vec<&str>) -> u32 {
+pub fn part2(input: &str) -> u32 {
     todo!();
 }
 
 #[cfg(test)]
 mod test {
-    use crate::parse_input;
-
     use super::*;
 
     #[test]
     fn test_part2() {
         let input = "";
 
-        let parsed = parse_input(&input);
-
-        let res = part2(&parsed);
+        let res = part2(input);
 
         assert_eq!(res, 1);
     }

@@ -1,8 +1,10 @@
 use std::cmp;
 
-use crate::utils::contains_special_char;
+use crate::{parse_input, utils::contains_special_char};
 
-pub fn part1(input: &Vec<Vec<char>>) -> u32 {
+pub fn part1(input: &str) -> u32 {
+    let input = parse_input(input);
+
     let rows = input.len() as i32;
     let cols = input[0].len() as i32;
 
@@ -53,8 +55,6 @@ pub fn part1(input: &Vec<Vec<char>>) -> u32 {
 
 #[cfg(test)]
 mod test {
-    use crate::parse_input;
-
     use super::*;
 
     #[test]
@@ -70,9 +70,7 @@ mod test {
 ...$.*....
 .664.598..";
 
-        let parsed = parse_input(&input);
-
-        let res = part1(&parsed);
+        let res = part1(input);
 
         assert_eq!(res, 4361);
     }

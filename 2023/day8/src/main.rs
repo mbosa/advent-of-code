@@ -16,12 +16,10 @@ struct Input<'a> {
 fn main() {
     let input = include_str!("../../inputs/day8.txt");
 
-    let parsed = parse_input(&input).unwrap();
-
-    let part1 = part1(&parsed);
+    let part1 = part1(input).unwrap();
     println!("part1: {}", part1);
 
-    let part2 = part2(&parsed);
+    let part2 = part2(input).unwrap();
     println!("part2: {}", part2);
 }
 

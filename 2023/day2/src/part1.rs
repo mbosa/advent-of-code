@@ -1,9 +1,13 @@
-use crate::{Game, Rgb};
+use anyhow::Result;
 
-pub fn part1(input: &Vec<Game>) -> u32 {
+use crate::{parse_input, Rgb};
+
+pub fn part1(input: &str) -> Result<u32> {
+    let input = parse_input(input)?;
+
     let max_rgb: Rgb = Rgb(12, 13, 14);
 
-    input
+    let res = input
         .into_iter()
         .filter(|game| {
             let max_cubes: Rgb = game.rounds.iter().fold(Rgb(0, 0, 0), |mut acc, round| {
@@ -16,13 +20,13 @@ pub fn part1(input: &Vec<Game>) -> u32 {
             max_cubes.0 <= max_rgb.0 && max_cubes.1 <= max_rgb.1 && max_cubes.2 <= max_rgb.2
         })
         .map(|game| game.id)
-        .sum::<u32>()
+        .sum::<u32>();
+
+    Ok(res)
 }
 
 #[cfg(test)]
 mod test {
-    use crate::parse_input;
-
     use super::*;
 
     #[test]
@@ -33,9 +37,7 @@ Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
 Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
 Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green";
 
-        let parsed = parse_input(input).unwrap();
-
-        let res = part1(&parsed);
+        let res = part1(input).unwrap();
 
         assert_eq!(res, 8);
     }

@@ -10,10 +10,8 @@ use part2::part2;
 fn main() {
     let input = include_str!("../../inputs/day5.txt");
 
-    let parsed = parse_input(&input).unwrap();
-
-    let part1 = part1(&parsed);
-    let part2 = part2(&parsed);
+    let part1 = part1(input).unwrap();
+    let part2 = part2(input).unwrap();
 
     println!("part1: {}", part1);
     println!("part2: {}", part2);

@@ -1,8 +1,13 @@
 use std::{cmp::Ordering, collections::HashMap};
 
-use crate::data::{HandType, Outcome};
+use crate::{
+    data::{HandType, Outcome},
+    parse_input,
+};
 
-pub fn part1(input: &Vec<(&str, u32)>) -> u32 {
+pub fn part1(input: &str) -> u32 {
+    let input = parse_input(input);
+
     let mut input = input
         .iter()
         .map(|&el| el.into())
@@ -104,8 +109,6 @@ impl<'a> From<(&'a str, u32)> for HandPart1<'a> {
 
 #[cfg(test)]
 mod test {
-    use crate::parse_input;
-
     use super::*;
 
     #[test]
@@ -116,9 +119,7 @@ KK677 28
 KTJJT 220
 QQQJA 483";
 
-        let parsed = parse_input(&input);
-
-        let res = part1(&parsed);
+        let res = part1(input);
 
         assert_eq!(res, 6440);
     }

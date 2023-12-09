@@ -1,12 +1,18 @@
-use crate::data::{Input, MapItem};
+use anyhow::Result;
 
-pub fn part1(input: &Input) -> i64 {
-    input
+use crate::{data::MapItem, parse_input};
+
+pub fn part1(input: &str) -> Result<i64> {
+    let input = parse_input(input)?;
+
+    let res = input
         .seeds
         .iter()
         .map(|&seed| input.maps.iter().fold(seed, |acc, maps| mapper(acc, maps)))
         .min()
-        .unwrap()
+        .unwrap();
+
+    Ok(res)
 }
 
 fn mapper(item: i64, map: &Vec<MapItem>) -> i64 {
@@ -32,8 +38,6 @@ fn mapper(item: i64, map: &Vec<MapItem>) -> i64 {
 
 #[cfg(test)]
 mod test {
-    use crate::parse_input;
-
     use super::*;
 
     #[test]
@@ -72,9 +76,7 @@ humidity-to-location map:
 60 56 37
 56 93 4";
 
-        let parsed = parse_input(&input).unwrap();
-
-        let res = part1(&parsed);
+        let res = part1(input).unwrap();
 
         assert_eq!(res, 35);
     }

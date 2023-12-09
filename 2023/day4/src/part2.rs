@@ -1,6 +1,8 @@
-use crate::{calc_card_result, Scratchcard};
+use crate::{calc_card_result, parse_input};
 
-pub fn part2(input: &Vec<Scratchcard>) -> u32 {
+pub fn part2(input: &str) -> u32 {
+    let input = parse_input(input);
+
     let values = input.iter().map(calc_card_result).collect::<Vec<u32>>();
     let mut stack = input.iter().map(|card| card.id).rev().collect::<Vec<u32>>();
 
@@ -20,8 +22,6 @@ pub fn part2(input: &Vec<Scratchcard>) -> u32 {
 
 #[cfg(test)]
 mod test {
-    use crate::parse_input;
-
     use super::*;
 
     #[test]
@@ -33,9 +33,7 @@ Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83
 Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
 Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11";
 
-        let parsed = parse_input(&input);
-
-        let res = part2(&parsed);
+        let res = part2(input);
 
         assert_eq!(res, 30);
     }

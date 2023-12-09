@@ -15,10 +15,8 @@ struct Scratchcard {
 fn main() {
     let input = include_str!("../../inputs/day4.txt");
 
-    let parsed = parse_input(&input);
-
-    let part1 = part1(&parsed);
-    let part2 = part2(&parsed);
+    let part1 = part1(input);
+    let part2 = part2(input);
 
     println!("part1: {}", part1);
     println!("part2: {}", part2);

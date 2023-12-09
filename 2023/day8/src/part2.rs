@@ -1,6 +1,10 @@
-use crate::Input;
+use anyhow::Result;
 
-pub fn part2(input: &Input) -> u64 {
+use crate::parse_input;
+
+pub fn part2(input: &str) -> Result<u64> {
+    let input = parse_input(input)?;
+
     let mut results: Vec<u64> = Vec::new();
 
     let starting_positions = input
@@ -31,7 +35,9 @@ pub fn part2(input: &Input) -> u64 {
         results.push(count);
     }
 
-    results.into_iter().reduce(|acc, el| lcm(acc, el)).unwrap()
+    let res = results.into_iter().reduce(|acc, el| lcm(acc, el)).unwrap();
+
+    Ok(res)
 }
 
 fn gcd(a: u64, b: u64) -> u64 {
@@ -54,8 +60,6 @@ fn lcm(a: u64, b: u64) -> u64 {
 
 #[cfg(test)]
 mod test {
-    use crate::parse_input;
-
     use super::*;
 
     #[test]
@@ -71,9 +75,7 @@ mod test {
 22Z = (22B, 22B)
 XXX = (XXX, XXX)";
 
-        let parsed = parse_input(&input).unwrap();
-
-        let res = part2(&parsed);
+        let res = part2(input).unwrap();
 
         assert_eq!(res, 6);
     }

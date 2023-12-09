@@ -1,8 +1,12 @@
 use std::cmp;
 
-use crate::data::{Input, MapItem};
+use anyhow::Result;
 
-pub fn part2(input: &Input) -> i64 {
+use crate::{data::MapItem, parse_input};
+
+pub fn part2(input: &str) -> Result<i64> {
+    let input = parse_input(input)?;
+
     let mut outcome: Vec<[i64; 2]> = Vec::new();
     let mut stack = input
         .seeds
@@ -20,7 +24,9 @@ pub fn part2(input: &Input) -> i64 {
         outcome = Vec::new();
     }
 
-    stack.iter().map(|&[from, _to]| from).min().unwrap()
+    let res = stack.iter().map(|&[from, _to]| from).min().unwrap();
+
+    Ok(res)
 }
 
 fn transform_range([from, to]: [i64; 2], delta: i64) -> [i64; 2] {
@@ -78,8 +84,6 @@ fn mapper(range: [i64; 2], map: &Vec<MapItem>, stack: &mut Vec<[i64; 2]>) -> [i6
 
 #[cfg(test)]
 mod test {
-    use crate::parse_input;
-
     use super::*;
 
     #[test]
@@ -118,9 +122,7 @@ humidity-to-location map:
 60 56 37
 56 93 4";
 
-        let parsed = parse_input(&input).unwrap();
-
-        let res = part2(&parsed);
+        let res = part2(input).unwrap();
 
         assert_eq!(res, 46);
     }

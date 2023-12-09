@@ -29,6 +29,7 @@ version = "0.1.0"
 name = "day2"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "lazy_static",
  "regex",
 ]
@@ -36,10 +37,16 @@ dependencies = [
 [[package]]
 name = "day3"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+]
 
 [[package]]
 name = "day4"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+]
 
 [[package]]
 name = "day5"

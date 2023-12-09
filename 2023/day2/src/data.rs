@@ -1,6 +1,7 @@
+use anyhow::Error;
 use lazy_static::lazy_static;
 use regex::Regex;
-use std::{num::ParseIntError, str::FromStr};
+use std::str::FromStr;
 
 lazy_static! {
     static ref ROUND_RE: Regex =
@@ -19,27 +20,20 @@ pub struct Game {
     pub rounds: Vec<Rgb>,
 }
 
-#[derive(Debug)]
-pub enum ParseGameError {
-    ParseIntError(ParseIntError),
-    BadFormat,
-}
-
 impl FromStr for Game {
-    type Err = ParseGameError;
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut parts = s.split(":");
-        let game_id = parts.next().ok_or(Self::Err::BadFormat)?;
-        let rounds_str = parts.next().ok_or(Self::Err::BadFormat)?;
+        let game_id = parts.next().ok_or(Error::msg("Error BadFormat"))?;
+        let rounds_str = parts.next().ok_or(Error::msg("Error BadFormat"))?;
 
         let id = GAME_ID_RE
             .captures(game_id)
             .and_then(|cap| cap.name("id"))
-            .ok_or(Self::Err::BadFormat)?
+            .ok_or(Error::msg("Error BadFormat"))?
             .as_str()
-            .parse::<u32>()
-            .map_err(Self::Err::ParseIntError)?;
+            .parse::<u32>()?;
 
         let mut rounds: Vec<Rgb> = Vec::new();
 
@@ -48,22 +42,13 @@ impl FromStr for Game {
 
             for cap in ROUND_RE.captures_iter(r) {
                 if let Some(r) = cap.name("reds") {
-                    rgb.0 = r
-                        .as_str()
-                        .parse::<u32>()
-                        .map_err(Self::Err::ParseIntError)?;
+                    rgb.0 = r.as_str().parse::<u32>()?;
                 }
                 if let Some(r) = cap.name("greens") {
-                    rgb.1 = r
-                        .as_str()
-                        .parse::<u32>()
-                        .map_err(Self::Err::ParseIntError)?;
+                    rgb.1 = r.as_str().parse::<u32>()?;
                 }
                 if let Some(r) = cap.name("blues") {
-                    rgb.2 = r
-                        .as_str()
-                        .parse::<u32>()
-                        .map_err(Self::Err::ParseIntError)?;
+                    rgb.2 = r.as_str().parse::<u32>()?;
                 }
             }
 

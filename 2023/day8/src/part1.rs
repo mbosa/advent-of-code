@@ -1,6 +1,10 @@
-use crate::Input;
+use anyhow::Result;
 
-pub fn part1(input: &Input) -> u32 {
+use crate::parse_input;
+
+pub fn part1(input: &str) -> Result<u32> {
+    let input = parse_input(input)?;
+
     let mut count = 0;
     let mut position = "AAA";
 
@@ -19,13 +23,11 @@ pub fn part1(input: &Input) -> u32 {
         }
     }
 
-    count
+    Ok(count)
 }
 
 #[cfg(test)]
 mod test {
-    use crate::parse_input;
-
     use super::*;
 
     #[test]
@@ -36,9 +38,7 @@ AAA = (BBB, BBB)
 BBB = (AAA, ZZZ)
 ZZZ = (ZZZ, ZZZ)";
 
-        let parsed = parse_input(&input).unwrap();
-
-        let res = part1(&parsed);
+        let res = part1(input).unwrap();
 
         assert_eq!(res, 6);
     }

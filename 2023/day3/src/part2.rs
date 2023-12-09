@@ -1,6 +1,8 @@
-use crate::utils::slice_char_to_u32;
+use crate::{parse_input, utils::slice_char_to_u32};
 
-pub fn part2(input: &Vec<Vec<char>>) -> u32 {
+pub fn part2(input: &str) -> u32 {
+    let input = parse_input(input);
+
     let rows = input.len() as i32;
     let cols = input[0].len() as i32;
 
@@ -66,8 +68,6 @@ pub fn part2(input: &Vec<Vec<char>>) -> u32 {
 
 #[cfg(test)]
 mod test {
-    use crate::parse_input;
-
     use super::*;
 
     #[test]
@@ -83,9 +83,7 @@ mod test {
 ...$.*....
 .664.598..";
 
-        let parsed = parse_input(&input);
-
-        let res = part2(&parsed);
+        let res = part2(input);
 
         assert_eq!(res, 467835);
     }
