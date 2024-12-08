@@ -1,0 +1,13 @@
+# test binaries
+*.test
+
+# output files
+*.out
+
+# profiling files
+*.prof
+*.pprof
+
+# input files
+input.txt
+
