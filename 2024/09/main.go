@@ -1,9 +1,9 @@
 package main
 
 import (
-	_ "embed"
-
 	"fmt"
+
+	_ "embed"
 )
 
 //go:embed input.txt

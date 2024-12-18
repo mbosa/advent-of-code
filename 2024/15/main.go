@@ -1,11 +1,11 @@
 package main
 
 import (
-	_ "embed"
+	"fmt"
 	"slices"
 	"strings"
 
-	"fmt"
+	_ "embed"
 )
 
 //go:embed input.txt

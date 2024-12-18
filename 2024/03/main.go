@@ -1,11 +1,11 @@
 package main
 
 import (
-	_ "embed"
-
 	"fmt"
 	"regexp"
 	"strconv"
+
+	_ "embed"
 )
 
 //go:embed input.txt
